@@ -116,15 +116,18 @@ export async function generateQuiz(topic: string, model: string = 'gpt-3.5-turbo
 
     logger.info(`🤖 Generating AI quiz for topic: ${topic} with model: ${model}`);
     
+    // Retrieve factual context for improved accuracy
+    const factualContext = await retrieveFactualContext(topic);
+    
     const provider = getProviderFromModel(model);
     let response: string;
 
     switch (provider) {
       case 'openai':
-        response = await generateWithOpenAI(topic, model);
+        response = await generateWithOpenAI(topic, model, factualContext);
         break;
       case 'anthropic':
-        response = await generateWithAnthropic(topic, model);
+        response = await generateWithAnthropic(topic, model, factualContext);
         break;
       default:
         throw new Error(`Unsupported provider for model: ${model}`);
@@ -156,7 +159,7 @@ export async function generateQuiz(topic: string, model: string = 'gpt-3.5-turbo
   }
 }
 
-async function generateWithOpenAI(topic: string, model: string): Promise<string> {
+async function generateWithOpenAI(topic: string, model: string, factualContext: string): Promise<string> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OpenAI API key not configured');
   }
@@ -166,7 +169,7 @@ async function generateWithOpenAI(topic: string, model: string): Promise<string>
     throw new Error('Failed to initialize OpenAI client');
   }
   
-  const prompt = createQuizPrompt(topic);
+  const prompt = createQuizPrompt(topic, factualContext);
   const completion = await openaiClient.chat.completions.create({
     model: model,
     messages: [
@@ -186,7 +189,7 @@ async function generateWithOpenAI(topic: string, model: string): Promise<string>
   return completion.choices[0]?.message?.content || '';
 }
 
-async function generateWithAnthropic(topic: string, model: string): Promise<string> {
+async function generateWithAnthropic(topic: string, model: string, factualContext: string): Promise<string> {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error('Anthropic API key not configured');
   }
@@ -196,7 +199,7 @@ async function generateWithAnthropic(topic: string, model: string): Promise<stri
     throw new Error('Failed to initialize Anthropic client');
   }
   
-  const prompt = createQuizPrompt(topic);
+  const prompt = createQuizPrompt(topic, factualContext);
   const message = await anthropicClient.messages.create({
     model: model,
     max_tokens: parseInt(process.env.ANTHROPIC_MAX_TOKENS || '1000'),
@@ -242,8 +245,8 @@ async function generateWithAnthropic(topic: string, model: string): Promise<stri
 //   throw new Error('Unexpected response format from Google AI');
 // }
 
-function createQuizPrompt(topic: string): string {
-  return `Create 5 multiple-choice questions about "${topic}". 
+function createQuizPrompt(topic: string, factualContext: string): string {
+  const basePrompt = `Create 5 multiple-choice questions about "${topic}". 
   
   Format each question exactly like this example:
   
@@ -261,7 +264,19 @@ function createQuizPrompt(topic: string): string {
   - Make distractors plausible but clearly wrong
   - Include a brief explanation for each correct answer
   - Questions should test different aspects of the topic
-  - Use clear, concise language
+  - Use clear, concise language`;
+  
+  // Add factual context if available
+  if (factualContext && factualContext.trim()) {
+    return `${basePrompt}
+  
+  Factual Context:
+  ${factualContext}
+  
+  Generate the quiz now:`;
+  }
+  
+  return `${basePrompt}
   
   Generate the quiz now:`;
 }
@@ -432,5 +447,107 @@ export async function submitQuiz(quizId: string, answers: ('A' | 'B' | 'C' | 'D'
   } catch (error) {
     logger.error('Error submitting quiz:', error);
     throw new Error(`Failed to submit quiz: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Wikipedia API integration for factual accuracy
+interface WikipediaSearchResult {
+  title: string;
+  snippet: string;
+  pageid: number;
+}
+
+interface WikipediaPageContent {
+  title: string;
+  extract: string;
+  url: string;
+}
+
+// Wikipedia API functions for retrieval-augmented generation
+async function searchWikipedia(query: string): Promise<WikipediaSearchResult[]> {
+  try {
+    const baseUrl = process.env.WIKIPEDIA_API_BASE_URL || 'https://en.wikipedia.org/w/api.php';
+    const searchUrl = `${baseUrl}?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+    const response = await fetch(searchUrl);
+    const data = await response.json() as any;
+    
+    if (data.query && data.query.search) {
+      return data.query.search.slice(0, 3); // Get top 3 results
+    }
+    return [];
+  } catch (error) {
+    logger.error('Error searching Wikipedia:', error);
+    return [];
+  }
+}
+
+async function getWikipediaPageContent(pageId: number): Promise<WikipediaPageContent | null> {
+  try {
+    const baseUrl = process.env.WIKIPEDIA_API_BASE_URL || 'https://en.wikipedia.org/w/api.php';
+    const contentUrl = `${baseUrl}?action=query&prop=extracts&exintro=true&exlimit=1&pageids=${pageId}&format=json&origin=*`;
+    const response = await fetch(contentUrl);
+    const data = await response.json() as any;
+    
+    if (data.query && data.query.pages && data.query.pages[pageId]) {
+      const page = data.query.pages[pageId];
+      return {
+        title: page.title,
+        extract: page.extract,
+        url: `https://en.wikipedia.org/?curid=${pageId}`
+      };
+    }
+    return null;
+  } catch (error) {
+    logger.error('Error fetching Wikipedia content:', error);
+    return null;
+  }
+}
+
+async function retrieveFactualContext(topic: string): Promise<string> {
+  try {
+    // Check if factual context retrieval is enabled
+    const enableFactualContext = process.env.ENABLE_FACTUAL_CONTEXT === 'true';
+    if (!enableFactualContext) {
+      logger.info(`Factual context retrieval disabled for topic: ${topic}`);
+      return '';
+    }
+    
+    logger.info(`🔍 Retrieving factual context for topic: ${topic}`);
+    
+    // Search Wikipedia for relevant articles
+    const searchResults = await searchWikipedia(topic);
+    if (searchResults.length === 0) {
+      logger.warn(`No Wikipedia results found for topic: ${topic}`);
+      return '';
+    }
+    
+    // Get content from the most relevant result
+    const topResult = searchResults[0];
+    const pageContent = await getWikipediaPageContent(topResult.pageid);
+    
+    if (!pageContent) {
+      logger.warn(`Failed to fetch Wikipedia content for topic: ${topic}`);
+      return '';
+    }
+    
+    // Clean and format the content for context injection
+    const cleanExtract = pageContent.extract
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+    
+    const context = `Factual Context from Wikipedia (${pageContent.title}):
+${cleanExtract}
+
+Source: ${pageContent.url}
+
+Based on this factual information, create accurate quiz questions.`;
+    
+    logger.info(`✅ Retrieved factual context for topic: ${topic} (${pageContent.title})`);
+    return context;
+    
+  } catch (error) {
+    logger.error('Error retrieving factual context:', error);
+    return '';
   }
 }

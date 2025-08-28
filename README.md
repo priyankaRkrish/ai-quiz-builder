@@ -6,6 +6,7 @@ A full-stack AI-powered quiz application that automatically generates multiple-c
 
 - **Multi-AI Model Support**: Generate quizzes using OpenAI GPT, Anthropic Claude, or Google Gemini
 - **AI-Powered Quiz Generation**: Automatically creates 5 multiple-choice questions on any topic
+- **Factual Accuracy with RAG**: Retrieval-augmented generation using Wikipedia for improved accuracy
 - **Smart Quiz Reuse**: Intelligent caching and reuse of recent quizzes for cost efficiency
 - **Force New Generation**: Option to generate completely new quizzes even for existing topics
 - **Interactive Quiz Interface**: Step-by-step navigation with progress tracking and loading states
@@ -64,6 +65,12 @@ ai-quiz-app/
 - **Removed Unique Constraints**: Fixed quiz generation issues with same topics
 - **Efficient Queries**: Optimized database queries for existing quizzes
 - **Migration System**: Proper database schema management with Prisma
+
+### **Factual Accuracy Improvements**
+- **Retrieval-Augmented Generation**: Wikipedia integration for current, factual information
+- **Reduced AI Hallucination**: Questions grounded in verified sources
+- **Source Attribution**: Wikipedia sources provided for transparency
+- **Configurable Feature**: Can be enabled/disabled via environment variable
 
 ## 🛠️ Tech Stack
 
