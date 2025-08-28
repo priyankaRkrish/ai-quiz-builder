@@ -1,0 +1,42 @@
+{
+  "name": "ai-quiz-app",
+  "version": "1.0.0",
+  "description": "AI-powered quiz application with React frontend and Node.js backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "./start.sh",
+    "dev": "./start.sh",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "test": "echo \"No tests specified yet\" && exit 0",
+    "clean": "rm -rf backend/dist frontend/dist",
+    "setup": "npm run install:all && npm run build"
+  },
+  "keywords": [
+    "ai",
+    "quiz",
+    "openai",
+    "react",
+    "nodejs",
+    "typescript",
+    "education"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repository-url"
+  },
+  "bugs": {
+    "url": "your-repository-url/issues"
+  },
+  "homepage": "your-repository-url#readme"
+}
