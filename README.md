@@ -192,20 +192,31 @@ The Swagger documentation includes:
 
 ### API Endpoints
 
-#### Authentication
-- `POST /api/auth/signup` - User registration
-- `POST /api/auth/signin` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/profile` - Get user profile
+#### Authentication (`/api/auth`)
+- `POST /api/auth/signup` - User registration with email, password, and username
+- `POST /api/auth/signin` - User login with email and password
+- `POST /api/auth/logout` - User logout (client-side token removal)
+- `GET /api/auth/profile` - Get current user profile (requires authentication)
 
-#### Quiz Management
-- `GET /api/quiz/models` - Get available AI models
-- `POST /api/quiz/generate` - Generate new quiz (with forceNew option)
-- `POST /api/quiz/submit` - Submit quiz answers
-- `GET /api/quiz/:id` - Get quiz by ID
+#### Quiz Management (`/api/quiz`)
+- `GET /api/quiz/models` - Get available AI models for quiz generation
+- `POST /api/quiz/generate` - Generate new AI quiz based on topic and model
+  - **Parameters**: `topic` (required), `model` (optional), `forceNew` (optional)
+  - **forceNew**: Set to `true` to bypass cache, clear existing topic cache, and generate completely new quiz
+- `POST /api/quiz/submit` - Submit quiz answers and get results with scoring
+- `GET /api/quiz/:id` - Get quiz details by ID (without correct answers)
+- `GET /api/quiz/submissions/history` - Get user's quiz submission history
+- `GET /api/quiz/submissions/:id` - Get detailed submission results by ID
 
-#### Health Check
-- `GET /health` - API health status
+#### System
+- `GET /health` - Server health check
+- `GET /api-docs` - Interactive API documentation (Swagger/OpenAPI)
+
+#### Authentication Required
+All quiz endpoints require a valid JWT token in the Authorization header:
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
 
 ## 🎯 Quiz Generation Features
 
