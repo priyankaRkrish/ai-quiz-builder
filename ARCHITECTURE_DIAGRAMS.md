@@ -1,6 +1,6 @@
 # 🏗️ System Architecture Diagrams
 
-This document contains essential diagrams to help interviewers understand the AI Quiz App architecture and the new RAG implementation.
+This document contains essential diagrams to help developers and stakeholders understand the AI Quiz App architecture and the new RAG implementation.
 
 ## 🎯 **1. System Architecture Overview**
 
@@ -359,7 +359,7 @@ graph TD
 - **Analytics**: Submission tracking for user progress
 - **Caching**: Redis for performance, PostgreSQL for persistence
 
-## 🎯 **Key Points for Interviewers**
+## 🎯 **Key Architecture Points**
 
 ### **Architecture Strengths**
 1. **Separation of Concerns**: Clear service boundaries
@@ -379,4 +379,4 @@ graph TD
 3. **Frontend Architecture**: Reusable components and contexts
 4. **Error Handling**: Comprehensive logging and user feedback
 
-These diagrams provide a complete picture of your system's architecture, making it easy for interviewers to understand the complexity and quality of your implementation!
+These diagrams provide a complete picture of your system's architecture, showcasing the complexity and quality of your implementation.
