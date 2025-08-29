@@ -46,7 +46,7 @@ This guide will help you test the AI Quiz App and see it in action.
 
 ### 4. Smart Quiz Reuse System
 - Generate a quiz with the same topic and model
-- Verify the app reuses recent quizzes (within 24 hours)
+- Verify the app reuses recent quizzes (within 1 hour)
 - Use "Force New Quiz Generation" checkbox to bypass reuse
 - Test with different AI models (GPT-3.5, GPT-4, Claude)
 

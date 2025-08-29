@@ -156,7 +156,7 @@ npm start
 
 ### **Intelligent Caching**
 - **Redis Integration**: Fast quiz retrieval from cache
-- **24-Hour Window**: Automatically reuses recent quizzes
+- **1-Hour Window**: Automatically reuses recent quizzes
 - **Cost Optimization**: Reduces AI API calls through smart reuse
 
 ### **Force New Generation**

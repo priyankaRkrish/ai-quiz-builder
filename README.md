@@ -51,7 +51,7 @@ ai-quiz-app/
 
 ### **Intelligent Quiz Management**
 - **Smart Caching System**: Redis-based caching for fast quiz retrieval
-- **Quiz Reuse Logic**: Automatically reuses recent quizzes (within 24 hours)
+- **Quiz Reuse Logic**: Automatically reuses recent quizzes (within 1 hour)
 - **Force New Generation**: User option to generate completely new quizzes (clears existing topic cache)
 - **Cost Optimization**: Reduces AI API calls through intelligent reuse
 
@@ -75,8 +75,8 @@ ai-quiz-app/
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** with TypeScript
-- **Vite** for fast development and building
+- **React 19** with TypeScript
+- **Vite 7** for fast development and building
 - **Tailwind CSS** for styling
 - **Axios** for HTTP requests
 - **React Router** for client-side routing
@@ -95,7 +95,7 @@ ai-quiz-app/
 
 ## 📋 Requirements
 
-- Node.js v18 or higher
+- Node.js v20 or higher
 - npm or yarn
 - Docker and Docker Compose
 - OpenAI API key (optional)
@@ -211,7 +211,7 @@ The Swagger documentation includes:
 
 ### **Smart Quiz Reuse**
 - **Automatic Detection**: Finds recent quizzes for the same topic/model
-- **24-Hour Window**: Reuses quizzes created within the last day
+- **1-Hour Window**: Reuses quizzes created within the last hour
 - **Cost Optimization**: Reduces AI API calls through intelligent reuse
 - **User Choice**: Option to force new generation when desired
 

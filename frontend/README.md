@@ -27,7 +27,7 @@ A modern, responsive React frontend for the AI-powered quiz application built wi
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm or yarn
 - Backend API running (see backend README)
 
@@ -186,7 +186,7 @@ import { Button } from '../common';
 
 ### **Intelligent Caching**
 - **Redis Integration**: Fast quiz retrieval from cache
-- **24-Hour Window**: Automatically reuses recent quizzes
+- **1-Hour Window**: Automatically reuses recent quizzes
 - **Cost Optimization**: Reduces AI API calls through smart reuse
 
 ### **Force New Generation**
