@@ -102,6 +102,34 @@ ai-quiz-app/
 - Anthropic API key (optional)
 - Google API key (optional)
 
+## 📚 Documentation
+
+This project includes comprehensive documentation to help you understand, set up, and contribute to the AI Quiz App:
+
+### **Core Documentation**
+- **[README.md](README.md)** - This file: Project overview, features, and quick start
+- **[SETUP.md](SETUP.md)** - Complete setup guide with Docker and development options
+- **[demo.md](demo.md)** - Interactive demo and testing guide
+
+### **Architecture & Design**
+- **[ARCHITECTURE_DIAGRAMS.md](ARCHITECTURE_DIAGRAMS.md)** - System architecture diagrams and technical overview
+- **[backend/FACTUAL_ACCURACY.md](backend/FACTUAL_ACCURACY.md)** - RAG implementation details and Wikipedia integration
+
+### **Component Documentation**
+- **[backend/README.md](backend/README.md)** - Backend API documentation, endpoints, and setup
+- **[frontend/README.md](frontend/README.md)** - Frontend components, structure, and development guide
+- **[backend/common/README.md](backend/common/README.md)** - Common backend utilities and services
+
+### **Development & Testing**
+- **[backend/TESTING.md](backend/TESTING.md)** - Testing guidelines and examples
+- **[backend/package.json](backend/package.json)** - Backend dependencies and scripts
+- **[frontend/package.json](frontend/package.json)** - Frontend dependencies and scripts
+
+### **Configuration & Environment**
+- **[backend/env.example](backend/env.example)** - Environment variables template
+- **[backend/docker-compose.yml](backend/docker-compose.yml)** - Docker services configuration
+- **[backend/Dockerfile](backend/Dockerfile)** - Backend container configuration
+
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
