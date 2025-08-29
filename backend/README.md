@@ -32,13 +32,49 @@ A Node.js/Express backend for the AI-powered quiz application that generates mul
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm or yarn
 - PostgreSQL database
 - Redis server
 - AI API keys (optional, but recommended for full functionality)
 
 ## Installation
+
+### **Option 1: Docker (Recommended)**
+
+1. Clone the repository and navigate to backend:
+   ```bash
+   cd backend
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp env.example .env
+   ```
+   
+   Edit `.env` and add your configuration:
+   ```bash
+   # AI API Keys
+   OPENAI_API_KEY=your_openai_api_key_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   GOOGLE_API_KEY=your_google_api_key_here
+   
+   # JWT
+   JWT_SECRET=your_jwt_secret_key_here
+   ```
+
+3. Start all services with Docker:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+4. Run database migrations:
+   ```bash
+   docker-compose exec backend npx prisma migrate dev
+   docker-compose exec backend npx prisma generate
+   ```
+
+### **Option 2: Local Development**
 
 1. Install dependencies:
    ```bash
@@ -67,7 +103,12 @@ A Node.js/Express backend for the AI-powered quiz application that generates mul
    JWT_SECRET=your_jwt_secret_key_here
    ```
 
-3. Set up the database:
+3. Start database services:
+   ```bash
+   docker-compose up -d --build postgres redis pgadmin
+   ```
+
+4. Set up the database:
    ```bash
    # Run database migrations
    npx prisma migrate dev
@@ -76,15 +117,28 @@ A Node.js/Express backend for the AI-powered quiz application that generates mul
    npx prisma generate
    ```
 
-4. Build the project:
+5. Build the project:
    ```bash
    npm run build
    ```
 
 ## Development
 
-Start the development server with hot reload:
+### **Option 1: Full Docker Development**
 ```bash
+# Start all services with hot reload
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f backend
+```
+
+### **Option 2: Hybrid Development (Recommended)**
+```bash
+# Start only database services
+docker-compose up -d --build postgres redis pgadmin
+
+# Start backend locally with hot reload
 npm run dev
 ```
 
@@ -98,7 +152,7 @@ npm run build
 npm start
 ```
 
-## 🆕 Smart Quiz Reuse System
+## Smart Quiz Reuse System
 
 ### **Intelligent Caching**
 - **Redis Integration**: Fast quiz retrieval from cache
@@ -117,24 +171,39 @@ npm start
 
 ## API Endpoints
 
-### Authentication
-- **POST** `/api/auth/signup` - User registration
-- **POST** `/api/auth/signin` - User login
-- **POST** `/api/auth/logout` - User logout
-- **GET** `/api/auth/profile` - Get user profile
+### **Authentication** (`/api/auth`)
+- **POST** `/api/auth/signup` - User registration with email, password, and username
+- **POST** `/api/auth/signin` - User login with email and password
+- **POST** `/api/auth/logout` - User logout (client-side token removal)
+- **GET** `/api/auth/profile` - Get current user profile (requires authentication)
 
-### Quiz Management
-- **GET** `/api/quiz/models` - Get available AI models
-- **POST** `/api/quiz/generate` - Generate new quiz (with forceNew option)
-- **POST** `/api/quiz/submit` - Submit quiz answers
-- **GET** `/api/quiz/:id` - Get quiz by ID
-- **GET** `/api/quiz/submissions/history` - Get user's quiz history
-- **GET** `/api/quiz/submissions/:id` - Get detailed submission results
+### **Quiz Management** (`/api/quiz`)
+- **GET** `/api/quiz/models` - Get available AI models for quiz generation
+- **POST** `/api/quiz/generate` - Generate new AI quiz based on topic and model
+  - **Parameters**: `topic` (required), `model` (optional), `forceNew` (optional)
+  - **forceNew**: Set to `true` to bypass cache and generate completely new quiz
+- **POST** `/api/quiz/submit` - Submit quiz answers and get results with scoring
+- **GET** `/api/quiz/:id` - Get quiz details by ID (without correct answers)
+- **GET** `/api/quiz/submissions/history` - Get user's quiz submission history
+- **GET** `/api/quiz/submissions/:id` - Get detailed submission results by ID
 
-### Health Check
-- **GET** `/health` - Server status
+### **System**
+- **GET** `/health` - Server health check
+- **GET** `/api-docs` - Interactive API documentation (Swagger/OpenAPI)
 
-## 🆕 Enhanced Quiz Generation
+### **Authentication Required**
+All quiz endpoints require a valid JWT token in the Authorization header:
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+## Enhanced Quiz Generation
+
+### **Retrieval-Augmented Generation (RAG)**
+- **Wikipedia Integration**: Automatically retrieves factual context for quiz topics
+- **Improved Accuracy**: Questions grounded in current, verified information
+- **Configurable**: Enable/disable via `ENABLE_FACTUAL_CONTEXT` environment variable
+- **Fallback Support**: Gracefully falls back to standard AI generation if Wikipedia unavailable
 
 ### **Multi-AI Model Support**
 ```typescript
@@ -263,7 +332,7 @@ The API includes comprehensive error handling:
 - **Internal Errors**: 500 for server-side issues
 - **Graceful Fallbacks**: Fallback quizzes when AI services fail
 
-## 🆕 Security Features
+## Security Features
 
 - **JWT Authentication**: Secure user sessions
 - **Helmet**: Security headers to prevent common attacks
@@ -272,7 +341,7 @@ The API includes comprehensive error handling:
 - **CORS Protection**: Cross-origin request handling
 - **Environment Variables**: Secure configuration management
 
-## 🆕 Logging
+## Logging
 
 ### **Winston Integration**
 - **Console Output**: Colored log levels for development
@@ -286,7 +355,7 @@ The API includes comprehensive error handling:
 - **Authentication**: User login/logout events
 - **API Requests**: Endpoint access and performance
 
-## 🆕 API Documentation
+## API Documentation
 
 ### **Swagger/OpenAPI**
 - **Interactive Docs**: Available at `/api-docs`
@@ -314,16 +383,52 @@ npm run test:coverage
 
 ## Docker Support
 
-The application includes Docker configuration:
+The application includes Docker configuration for easy development and deployment:
+
+### **Quick Start**
 ```bash
-# Start all services
-docker-compose up -d
+# Start all services (backend + database)
+docker-compose up -d --build
 
-# View logs
+# Check service status
+docker-compose ps
+
+# View all logs
 docker-compose logs -f
+```
 
-# Stop services
+### **Service Management**
+```bash
+# Start only database services
+docker-compose up -d --build postgres redis pgadmin
+
+# Start only backend
+docker-compose up -d --build backend
+
+# Stop all services
 docker-compose down
+
+# Restart services
+docker-compose restart
+```
+
+### **Development Workflow**
+```bash
+# Start databases, run backend locally
+docker-compose up -d --build postgres redis pgadmin
+npm run dev
+
+# Full containerized development
+docker-compose up -d --build
+```
+
+### **Production Deployment**
+```bash
+# Production environment
+docker-compose --env-file .env.production up -d --build
+
+# Scale backend services
+docker-compose up -d --scale backend=3 --build
 ```
 
 ## Future Enhancements

@@ -144,6 +144,7 @@ erDiagram
     USERS {
         int id PK
         string email UK
+        string username UK
         string password_hash
         timestamp created_at
         timestamp updated_at
@@ -156,6 +157,8 @@ erDiagram
         int user_id FK
         timestamp created_at
         timestamp expires_at
+        boolean is_ai_generated
+        string cache_key
     }
     
     QUESTIONS {
@@ -165,29 +168,34 @@ erDiagram
         json options
         string correct_answer
         string explanation
-        timestamp created_at
+        int question_order
     }
     
-    QUIZ_ATTEMPTS {
+    QUIZ_SUBMISSIONS {
         int id PK
         int quiz_id FK
         int user_id FK
+        timestamp submitted_at
         int score
-        json answers
-        timestamp completed_at
+        int total_questions
+        decimal percentage
     }
     
-    CACHE_ENTRIES {
-        string key PK
-        text value
-        int ttl
-        timestamp created_at
+    USER_ANSWERS {
+        int id PK
+        int submission_id FK
+        int question_id FK
+        string user_answer
+        boolean is_correct
+        timestamp submitted_at
     }
     
     USERS ||--o{ QUIZZES : creates
-    USERS ||--o{ QUIZ_ATTEMPTS : attempts
+    USERS ||--o{ QUIZ_SUBMISSIONS : submits
     QUIZZES ||--o{ QUESTIONS : contains
-    QUIZZES ||--o{ QUIZ_ATTEMPTS : attempted
+    QUIZZES ||--o{ QUIZ_SUBMISSIONS : submitted
+    QUIZ_SUBMISSIONS ||--o{ USER_ANSWERS : includes
+    QUESTIONS ||--o{ USER_ANSWERS : answered
 ```
 
 ## 🎨 **5. Frontend Component Hierarchy**
@@ -289,3 +297,86 @@ graph TD
     style H fill:#f3e5f5
     style J fill:#e8f5e8
 ```
+
+## 🗃️ **8. Database Operations Flow**
+
+```mermaid
+graph TD
+    subgraph "Quiz Generation"
+        A[User Request] --> B[Check Redis Cache]
+        B -->|Hit| C[Return Cached Quiz]
+        B -->|Miss| D[Check Database]
+        D -->|Found| E[Return DB Quiz + Cache]
+        D -->|Not Found| F[Generate New Quiz]
+    end
+    
+    subgraph "Quiz Storage"
+        F --> G[Create Quiz Record]
+        G --> H[Create Question Records]
+        H --> I[Store in PostgreSQL]
+        I --> J[Cache in Redis]
+    end
+    
+    subgraph "Quiz Submission"
+        K[User Takes Quiz] --> L[Create Submission]
+        L --> M[Create User Answers]
+        M --> N[Calculate Score]
+        N --> O[Store Results]
+    end
+    
+    subgraph "Data Relationships"
+        P[User] --> Q[Quiz]
+        Q --> R[Question]
+        Q --> S[Submission]
+        S --> T[UserAnswer]
+        R --> T
+    end
+    
+    style F fill:#e1f5fe
+    style I fill:#e8f5e8
+    style O fill:#f3e5f5
+```
+
+## 🔍 **Key Schema Improvements & Design Decisions**
+
+### **Current Schema Features**
+1. **User Management**: Proper authentication with username/email uniqueness
+2. **Quiz Tracking**: AI generation metadata and cache key tracking
+3. **Question Ordering**: Structured question sequence for better UX
+4. **Submission Analytics**: Comprehensive scoring and percentage tracking
+5. **Answer Validation**: Individual answer tracking with correctness flags
+
+### **Database Design Strengths**
+- **Normalized Structure**: Proper relationships without data duplication
+- **Audit Trail**: Timestamps on all major operations
+- **Flexible Options**: JSON storage for question options
+- **Cascade Deletion**: Proper cleanup when quizzes are removed
+- **Performance Indexes**: Unique constraints on email/username
+
+### **Data Flow Highlights**
+- **Quiz Generation**: RAG → Database → Cache → User
+- **Quiz Taking**: User → Questions → Answers → Scoring
+- **Analytics**: Submission tracking for user progress
+- **Caching**: Redis for performance, PostgreSQL for persistence
+
+## 🎯 **Key Points for Interviewers**
+
+### **Architecture Strengths**
+1. **Separation of Concerns**: Clear service boundaries
+2. **Scalability**: Redis caching, database optimization
+3. **Security**: Authentication, rate limiting, input validation
+4. **Maintainability**: TypeScript, modular structure
+
+### **RAG Implementation Highlights**
+1. **Factual Accuracy**: Wikipedia integration for current information
+2. **Reduced Hallucination**: Questions grounded in verified sources
+3. **Source Attribution**: Wikipedia sources provided for transparency
+4. **Configurable Feature**: Can be enabled/disabled via environment variable
+
+### **Technical Decisions**
+1. **Multi-AI Provider**: OpenAI, Anthropic, Google support
+2. **Database Design**: Prisma ORM with proper relationships
+3. **Frontend Architecture**: Reusable components and contexts
+4. **Error Handling**: Comprehensive logging and user feedback
+
+These diagrams provide a complete picture of your system's architecture, making it easy for interviewers to understand the complexity and quality of your implementation!
