@@ -41,36 +41,36 @@ ai-quiz-app/
 └── README.md           # This file
 ```
 
-## 🆕 Recent Improvements
+## ✨ Key Features & Capabilities
 
-### **Loading States & User Experience**
+### **Enhanced User Experience**
 - **Quiz Generation Loading**: Full-screen overlay with spinner and informative messages
 - **Quiz Submission Loading**: Button states and loading indicators during submission
 - **Form Disabling**: Prevents multiple submissions and provides clear feedback
 - **Professional Loading Overlays**: Consistent loading experience across the app
 
-### **Smart Quiz Reuse System**
-- **Intelligent Caching**: Redis-based caching for fast quiz retrieval
-- **Smart Reuse Logic**: Automatically reuses recent quizzes (within 24 hours)
-- **Force New Generation**: User option to generate completely new quizzes
+### **Intelligent Quiz Management**
+- **Smart Caching System**: Redis-based caching for fast quiz retrieval
+- **Quiz Reuse Logic**: Automatically reuses recent quizzes (within 24 hours)
+- **Force New Generation**: User option to generate completely new quizzes (clears existing topic cache)
 - **Cost Optimization**: Reduces AI API calls through intelligent reuse
 
-### **Common Components Architecture**
+### **Modern Architecture**
 - **Reusable UI Components**: LoadingSpinner, Button, and more in `common/ui/`
 - **Consistent Design**: Standardized component patterns across the application
 - **Easy Maintenance**: Centralized location for shared components
 - **Scalable Structure**: Easy to add new common components
 
-### **Database & Performance Improvements**
-- **Removed Unique Constraints**: Fixed quiz generation issues with same topics
-- **Efficient Queries**: Optimized database queries for existing quizzes
-- **Migration System**: Proper database schema management with Prisma
+### **Performance & Reliability**
+- **Database Optimization**: Efficient queries and proper schema management
+- **Migration System**: Robust database schema management with Prisma
+- **Error Handling**: Comprehensive error handling and fallback strategies
 
-### **Factual Accuracy Improvements**
+### **AI-Powered Intelligence**
 - **Retrieval-Augmented Generation**: Wikipedia integration for current, factual information
 - **Reduced AI Hallucination**: Questions grounded in verified sources
 - **Source Attribution**: Wikipedia sources provided for transparency
-- **Configurable Feature**: Can be enabled/disabled via environment variable
+- **Configurable Features**: Can be enabled/disabled via environment variables
 
 ## 🛠️ Tech Stack
 

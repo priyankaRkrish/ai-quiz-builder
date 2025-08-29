@@ -11,9 +11,9 @@ A modern, responsive React frontend for the AI-powered quiz application built wi
 - 📊 **Detailed Results**: Comprehensive feedback with explanations
 - 🔄 **State Management**: Efficient React state management for smooth user experience
 - 🎨 **Tailwind CSS**: Utility-first CSS framework for consistent styling
-- 🆕 **Smart Quiz Reuse**: Intelligent caching and reuse of recent quizzes
-- 🆕 **Force New Generation**: Option to generate completely new quizzes for variety
-- 🆕 **Common Components**: Reusable UI components for consistency and maintainability
+- **Smart Quiz Reuse**: Intelligent caching and reuse of recent quizzes
+- **Force New Generation**: Option to generate completely new quizzes for variety (clears existing topic cache)
+- **Common Components**: Reusable UI components for consistency and maintainability
 
 ## Tech Stack
 
@@ -71,7 +71,7 @@ npm run lint
 
 ```
 src/
-├── common/              # 🆕 Reusable UI components
+├── common/              # Reusable UI components
 │   ├── ui/             # Common UI components
 │   │   ├── LoadingSpinner.tsx
 │   │   ├── Button.tsx
@@ -96,7 +96,7 @@ src/
 └── index.css          # Global styles and Tailwind imports
 ```
 
-## 🆕 Common Components
+## Common Components
 
 ### **LoadingSpinner**
 A reusable loading spinner with multiple sizes and optional text.
@@ -182,7 +182,7 @@ import { Button } from '../common';
 - Form validation and error handling
 - Loading states during authentication
 
-## 🆕 Smart Quiz Reuse System
+## Smart Quiz Reuse System
 
 ### **Intelligent Caching**
 - **Redis Integration**: Fast quiz retrieval from cache

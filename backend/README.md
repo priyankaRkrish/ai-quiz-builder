@@ -7,8 +7,8 @@ A Node.js/Express backend for the AI-powered quiz application that generates mul
 - 🚀 **RESTful API** endpoints for quiz generation and submission
 - 🤖 **Multi-AI Model Support**: OpenAI GPT, Anthropic Claude, Google Gemini
 - 🧠 **AI-Powered Quiz Generation**: Creates 5 multiple-choice questions on any topic
-- 🆕 **Smart Quiz Reuse**: Intelligent caching and reuse of recent quizzes
-- 🆕 **Force New Generation**: Option to generate completely new quizzes
+- **Smart Quiz Reuse**: Intelligent caching and reuse of recent quizzes
+- **Force New Generation**: Option to generate completely new quizzes (clears existing topic cache)
 - 📚 **Redis Caching**: Fast quiz retrieval and intelligent caching
 - 🗄️ **Database Integration**: PostgreSQL with Prisma ORM for persistent storage
 - 🔒 **JWT Authentication**: Secure user sessions and API access
@@ -181,7 +181,7 @@ npm start
 - **GET** `/api/quiz/models` - Get available AI models for quiz generation
 - **POST** `/api/quiz/generate` - Generate new AI quiz based on topic and model
   - **Parameters**: `topic` (required), `model` (optional), `forceNew` (optional)
-  - **forceNew**: Set to `true` to bypass cache and generate completely new quiz
+  - **forceNew**: Set to `true` to bypass cache, clear existing topic cache, and generate completely new quiz
 - **POST** `/api/quiz/submit` - Submit quiz answers and get results with scoring
 - **GET** `/api/quiz/:id` - Get quiz details by ID (without correct answers)
 - **GET** `/api/quiz/submissions/history` - Get user's quiz submission history
@@ -278,7 +278,7 @@ src/
     └── schema.prisma      # Database schema
 ```
 
-## 🆕 Database Schema
+## Database Schema
 
 ### **Quiz Model**
 ```prisma
@@ -304,7 +304,7 @@ model Quiz {
 - **Expiration**: Automatic quiz expiration for security
 - **Relationships**: Proper database relationships with Prisma
 
-## 🆕 Redis Caching
+## Redis Caching
 
 ### **Cache Strategy**
 - **Quiz Storage**: Store generated quizzes with TTL
